@@ -24,7 +24,7 @@ jobs:
           environment-file: environment.yaml
       - name: Run snakemake
         run: |
-          snakemake --config taxon_id=${{ matrix.taxon_id }}
+          snakemake -F --config taxon_id=${{ matrix.taxon_id }}
         shell: bash -l {0} 
       - name: Commit and Push Results
         run: |
