@@ -13,17 +13,17 @@ jobs:
           - 11520 # Influenza B
       fail-fast: false
     steps:
-      - uses: actions/checkout@v4
-      - name: Set up micromamba
-        uses: mamba-org/setup-micromamba@v2
+      - name: Set up Conda
+        uses: conda-incubator/setup-miniconda@v3
         with:
-          environment-file: environment.yml
-          micromamba-version: 'latest'
-          cache-environment: true
+          auto-update-conda: true
+          python-version: "3.12"
+          activate-environment: grouping
+          environment-file: environment.yaml
       - name: Run snakemake
         run: |
           snakemake --config taxon_id=${{ matrix.taxon_id }}
-        shell: micromamba-shell {0}
+        shell: bash -l {0} 
       - name: Commit and Push Results
         run: |
           git config --global user.name "github-actions"
