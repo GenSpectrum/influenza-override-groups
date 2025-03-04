@@ -13,6 +13,10 @@ jobs:
           - 11520 # Influenza B
       fail-fast: false
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: List Files for Debugging
+        run: ls -la
       - name: Set up Conda
         uses: conda-incubator/setup-miniconda@v3
         with:
