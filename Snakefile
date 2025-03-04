@@ -19,7 +19,7 @@ rule fetch_ncbi_dataset_package:
         dataset_package="results/genbank_assembly.zip",
         report="results/ncbi_dataset/data/assembly_data_report.jsonl",
     params:
-        taxon_id=TAXON_ID
+        taxon_id=TAXON_ID,
         unzip=unzip,
     shell:
         """
