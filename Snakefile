@@ -1,5 +1,12 @@
 TAXON_ID = config["taxon_id"]
 
+if os.uname().sysname == "Darwin":
+    # Don't use conda-forge unzip on macOS
+    # Due to https://github.com/conda-forge/unzip-feedstock/issues/16
+    unzip = "/usr/bin/unzip"
+else:
+    unzip = "unzip"
+
 
 rule all:
     input:
@@ -13,10 +20,11 @@ rule fetch_ncbi_dataset_package:
         report="results/ncbi_dataset/data/assembly_data_report.jsonl",
     params:
         taxon_id=TAXON_ID
+        unzip=unzip,
     shell:
         """
         datasets download genome taxon {params.taxon_id} --assembly-source refseq --dehydrated  --filename genbank_assembly.zip
-        unzip genbank_assembly.zip -d genbank_assembly
+        {params.unzip} genbank_assembly.zip -d genbank_assembly
         datasets rehydrate --directory genbank_assembly
         """
 
