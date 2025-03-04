@@ -14,7 +14,21 @@ rule all:
 
 
 
-rule fetch_ncbi_dataset_package:
+rule fetch_refseq_assemblies:
+    output:
+        dataset_package="refseq_assembly.zip",
+        report="refseq_assembly/ncbi_dataset/data/assembly_data_report.jsonl",
+    params:
+        taxon_id=TAXON_ID,
+        unzip=unzip,
+    shell:
+        """
+        datasets download genome taxon {params.taxon_id} --assembly-source refseq --dehydrated  --filename refseq_assembly.zip
+        {params.unzip} refseq_assembly.zip -d refseq_assembly
+        datasets rehydrate --directory refseq_assembly
+        """
+
+rule fetch_genbank_assemblies:
     output:
         dataset_package="genbank_assembly.zip",
         report="genbank_assembly/ncbi_dataset/data/assembly_data_report.jsonl",
@@ -23,7 +37,7 @@ rule fetch_ncbi_dataset_package:
         unzip=unzip,
     shell:
         """
-        datasets download genome taxon {params.taxon_id} --assembly-source refseq --dehydrated  --filename genbank_assembly.zip
+        datasets download genome taxon {params.taxon_id} --assembly-source genbank --dehydrated  --filename genbank_assembly.zip
         {params.unzip} genbank_assembly.zip -d genbank_assembly
         datasets rehydrate --directory genbank_assembly
         """
@@ -31,16 +45,19 @@ rule fetch_ncbi_dataset_package:
 rule get_assembly_groups:
     input:
         script="scripts/group_segments.py",
-        report="genbank_assembly/ncbi_dataset/data/assembly_data_report.jsonl",
+        report_genbank="genbank_assembly/ncbi_dataset/data/assembly_data_report.jsonl",
+        report_refseq="refseq_assembly/ncbi_dataset/data/assembly_data_report.jsonl",
         ignore_list="error_sequences.txt",
     output:
         groups_json="results/{TAXON_ID}-groups.json",
     params:
-        dataset_dir="genbank_assembly/ncbi_dataset/data",
+        genbank_dir="genbank_assembly/ncbi_dataset/data",
+        refseq_dir="refseq_assembly/ncbi_dataset/data",
     shell:
         """
         python {input.script} \
-        --dataset-dir {params.dataset_dir} \
+        --dataset-dir {params.genbank_dir} \
+        --dataset-dir {params.refseq_dir} \
         --output-file {output.groups_json} \
         --ignore-list {input.ignore_list}
         """

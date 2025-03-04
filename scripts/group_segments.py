@@ -4,10 +4,10 @@ import json
 import click
 
 @click.command()
-@click.option("--dataset-dir", required=True, type=click.Path(exists=True))
+@click.option("--dataset-dir", required=True, type=click.Path(exists=True), multiple=True)
 @click.option("--output-file", required=True, type=click.Path(exists=False))
 @click.option("--ignore-list", required=True, type=click.Path(exists=False))
-def main(dataset_dir: str, output_file: str, ignore_list: str) -> None:
+def main(dataset_dir: list[str], output_file: str, ignore_list: str) -> None:
     fasta_dict = {}
 
     with open(ignore_list, 'r') as file:
@@ -17,12 +17,14 @@ def main(dataset_dir: str, output_file: str, ignore_list: str) -> None:
 
     count = 0
     number_dict = {}
-    for gca_folder in os.listdir(dataset_dir):
-        gca_path = os.path.join(dataset_dir, gca_folder)
-        if not os.path.isdir(gca_path):
-            continue
-        for file in os.listdir(gca_path):
-            if file.endswith(".fna"):
+    for dir in dataset_dir:
+        for gca_folder in os.listdir(dir):
+            gca_path = os.path.join(dir, gca_folder)
+            if not os.path.isdir(gca_path):
+                continue
+            for file in os.listdir(gca_path):
+                if not file.endswith(".fna"):
+                    continue
                 count += 1
                 file_path = os.path.join(gca_path, file)
                 segments = []
