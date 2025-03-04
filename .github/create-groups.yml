@@ -1,0 +1,33 @@
+name: Download Assemblies to create override groups
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 0 * * *' # Runs daily at midnight UTC
+jobs:
+  download-and-upload:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        taxon_id:
+          - 197911 # Influenza A
+          - 11520 # Influenza B
+      fail-fast: false
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up micromamba
+        uses: mamba-org/setup-micromamba@v2
+        with:
+          environment-file: environment.yml
+          micromamba-version: 'latest'
+          cache-environment: true
+      - name: Run snakemake
+        run: |
+          snakemake --config taxon_id=${{ matrix.taxon_id }}
+        shell: micromamba-shell {0}
+      - name: Commit and Push Results
+        run: |
+          git config --global user.name "github-actions"
+          git config --global user.email "github-actions@github.com"
+          git add results/
+          git commit -m "Update results from Snakemake run" || echo "No changes to commit"
+          git push

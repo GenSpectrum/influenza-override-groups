@@ -1,2 +1,2 @@
 # influenza-override-groups
-This repo contains a script for generating a minimum index of all influenza A and B subtypes to use to annotate influenza subtype for Genspectrum
+This repo builds on the work in https://github.com/anna-parker/influenza-a-groupings.

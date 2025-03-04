@@ -1,0 +1,13 @@
+name: grouping
+channels:
+  - conda-forge
+  - bioconda
+dependencies:
+  # Core Python dependencies
+  - python =3.12
+  # Extra dependencies
+  - biopython
+  - click
+  - ncbi-datasets-cli >=16.29.0
+  - snakemake
+  - unzip
