@@ -1,0 +1,3 @@
+.snakemake/
+genbank_assembly/
+refseq_assembly/
