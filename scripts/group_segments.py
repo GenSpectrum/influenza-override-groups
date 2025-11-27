@@ -1,3 +1,4 @@
+from collections import Counter
 import os
 from Bio import SeqIO
 import json
@@ -34,8 +35,9 @@ def main(dataset_dir: list[str], output_file: str, ignore_list: str) -> None:
 
     print(f"Ignoring {len(ignore)} segments")
 
-    count = 0
-    number_dict = {}
+    assembly_count = 0
+    segment_count_counter = Counter()
+
     for dir in dataset_dir:
         for gca_folder in os.listdir(dir):
             gca_path = os.path.join(dir, gca_folder)
@@ -44,19 +46,23 @@ def main(dataset_dir: list[str], output_file: str, ignore_list: str) -> None:
             for file in os.listdir(gca_path):
                 if not file.endswith(".fna"):
                     continue
-                count += 1
+                if "cds_from_genomic" in file:
+                    # Examples: GCA_052462815.1, GCA_052463665.1, GCA_052463295.1, GCA_052464535.1
+                    continue
+                assembly_id = file.split(".")[0]
+                assembly_count += 1
                 file_path = os.path.join(gca_path, file)
                 segments = []
 
                 with open(file_path, "r") as f:
                     segments = [record.id for record in SeqIO.parse(f, "fasta") if record.id not in ignore]
-                number_dict[len(segments)] = number_dict.get(len(segments), 0) + 1
-                if file.split(".")[0] in assembly_segment_dict:
+                segment_count_counter[len(segments)] += 1
+                if assembly_id in assembly_segment_dict:
                     raise ValueError(f"Duplicate assembly found: {file.split('.')[0]}")
-                assembly_segment_dict[file.split(".")[0]] = segments
+                assembly_segment_dict[assembly_id] = segments
 
-    print(f"Found {count} assemblies")
-    print(f"Number of assemblies with x segments: {number_dict}")
+    print(f"Found {assembly_count} assemblies")
+    print(f"Number of assemblies with x segments: {segment_count_counter}")
 
     with open(output_file, "w") as outfile:
         json.dump(assembly_segment_dict, outfile)
