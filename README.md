@@ -1,12 +1,32 @@
 # influenza-override-groups
-This directory creates a JSON that contains the mapping of Influenza A and Influenza B genbank assemblies to segment accessions.
 
-It can be used to create a mapping for any taxon by replacing the taxon-id and running:
+This directory contains a mapping of Influenza A and Influenza B genbank assemblies to segment accessions,
+as well as the code to update this mapping.
+
+Mapping files:
+
+* `results/117911-groups.json` (Influenza A)
+* `results/11520-groups.json` (Influenza B)
+
+## Generating these files
+
+Activate the enviroment and run the `snakemake` script for the taxon you want to update.
+For example for Influenza A:
 
 ```
 micromamba create -f environment.yaml
 micromamba activate grouping
 snakemake --config taxon_id=197911
 ```
+
+## What the script is doing
+
+1. Download the metadata information for the assemblies from genbank and refseq.
+2. Hydrate the assemblies, which means that the actual sequence information is downloaded.
+3. For each assembly parse the `fna` file to find the segment names, and store the final JSON file.
+
+For Influenza A, step 1 takes about 3 minutes, step 2 can take around 1 hour, and step 3 should take only 30 seconds.
+
+## Acknowledgements
 
 This repo builds on the work in https://github.com/anna-parker/influenza-a-groupings.
