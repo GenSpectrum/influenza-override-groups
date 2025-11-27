@@ -47,8 +47,13 @@ def main(dataset_dir: list[str], output_file: str, ignore_list: str) -> None:
             for file in os.listdir(gca_path):
                 if not file.endswith(".fna"):
                     continue
+                # Certain assemblies contain two files, one of which we want to ignore because it has CDS info
+                # Examples: GCA_052462815.1, GCA_052463665.1, GCA_052463295.1, GCA_052464535.1
+                if "cds_from_genomic" in file:
+                    continue
                 assembly_id = file.split(".")[0]
                 assembly_count += 1
+
                 file_path = os.path.join(gca_path, file)
                 segments = []
 
