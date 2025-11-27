@@ -4,9 +4,28 @@ import json
 import click
 
 @click.command()
-@click.option("--dataset-dir", required=True, type=click.Path(exists=True), multiple=True)
-@click.option("--output-file", required=True, type=click.Path(exists=False))
-@click.option("--ignore-list", required=True, type=click.Path(exists=False))
+@click.option(
+    "--dataset-dir",
+    required=True,
+    type=click.Path(exists=True),
+    multiple=True,
+    help=(
+        "The dataset dir is the 'data' directory you get from an NCBI datasets download. "
+        "It has individual directories inside, per assembly (named e.g. GCF_0002342342.1)."
+    )
+)
+@click.option(
+    "--output-file",
+    required=True,
+    type=click.Path(exists=False),
+    help="The file to be generated, containing the groupings in JSON format."
+)
+@click.option(
+    "--ignore-list",
+    required=True,
+    type=click.Path(exists=False),
+    help="A file with one segment ID per line to be ignored."
+)
 def main(dataset_dir: list[str], output_file: str, ignore_list: str) -> None:
     fasta_dict = {}
 
