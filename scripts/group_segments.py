@@ -47,8 +47,12 @@ def main(dataset_dir: list[str], output_file: str, ignore_list: str) -> None:
             for file in os.listdir(gca_path):
                 if not file.endswith(".fna"):
                     continue
+                if "cds_from_genomic" in file:
+                    # Examples: GCA_052462815.1, GCA_052463665.1, GCA_052463295.1, GCA_052464535.1
+                    continue
                 assembly_id = file.split(".")[0]
                 assembly_count += 1
+
                 file_path = os.path.join(gca_path, file)
                 segments = []
 
