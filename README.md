@@ -5,7 +5,7 @@ as well as the code to update this mapping.
 
 Mapping files:
 
-* `results/117911-groups.json` (Influenza A)
+* `results/197911-groups.json` (Influenza A)
 * `results/11520-groups.json` (Influenza B)
 
 ## Generating these files
