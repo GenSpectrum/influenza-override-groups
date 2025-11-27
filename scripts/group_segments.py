@@ -40,7 +40,7 @@ def main(dataset_dir: list[str], output_file: str, ignore_list: str) -> None:
     print(f"Number of assemblies with x segments: {number_dict}")
 
     with open(output_file, "w") as outfile:
-        json.dump(fasta_dict, outfile)
+        json.dump(fasta_dict, outfile, indent=4, sort_keys=True)
 
 
 if __name__ == "__main__":
