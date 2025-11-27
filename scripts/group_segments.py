@@ -42,12 +42,10 @@ def main(dataset_dir: list[str], output_file: str, ignore_list: str) -> None:
         for gca_folder in os.listdir(dir):
             gca_path = os.path.join(dir, gca_folder)
             if not os.path.isdir(gca_path):
+                # The 'assembly_data_report.jsonl' and 'dataset_catalog.json' are also in the dir; skip.
                 continue
             for file in os.listdir(gca_path):
                 if not file.endswith(".fna"):
-                    continue
-                if "cds_from_genomic" in file:
-                    # Examples: GCA_052462815.1, GCA_052463665.1, GCA_052463295.1, GCA_052464535.1
                     continue
                 assembly_id = file.split(".")[0]
                 assembly_count += 1
@@ -58,11 +56,13 @@ def main(dataset_dir: list[str], output_file: str, ignore_list: str) -> None:
                     segments = [record.id for record in SeqIO.parse(f, "fasta") if record.id not in ignore]
                 segment_count_counter[len(segments)] += 1
                 if assembly_id in assembly_segment_dict:
-                    raise ValueError(f"Duplicate assembly found: {file.split('.')[0]}")
+                    raise ValueError(f"Duplicate assembly found: {assembly_id}")
                 assembly_segment_dict[assembly_id] = segments
 
     print(f"Found {assembly_count} assemblies")
-    print(f"Number of assemblies with x segments: {segment_count_counter}")
+    print("Number of assemblies with x segments:")
+    for segment_count in sorted(segment_count_counter):
+        print(f"{segment_count}: {segment_count_counter[segment_count]:7}")
 
     with open(output_file, "w") as outfile:
         json.dump(assembly_segment_dict, outfile)
