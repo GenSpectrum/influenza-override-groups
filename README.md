@@ -27,6 +27,15 @@ snakemake --config taxon_id=197911
 
 For Influenza A, step 1 takes about 3 minutes, step 2 can take around 1 hour, and step 3 should take only 30 seconds.
 
+## How these files are used
+
+[Loculus](https://loculus.org/) can use these files during ingest, to override groups.
+You can specify these files in the [ingest configuration](https://loculus.org/reference/helm-chart-config/#ingest-type) using the `grouping_override` setting by pointing directly to the file URL:
+
+```yaml
+grouping_override: "https://GenSpectrum.github.io/influenza-override-groups/results/197911-groups.json"
+```
+
 ## Acknowledgements
 
 This repo builds on the work in https://github.com/anna-parker/influenza-a-groupings.
