@@ -14,32 +14,18 @@ rule all:
 
 
 
-rule fetch_refseq_assemblies:
+rule fetch_assemblies:
     output:
-        dataset_package="refseq_assembly.zip",
-        report="refseq_assembly/ncbi_dataset/data/assembly_data_report.jsonl",
+        dataset_package="{source}_assembly.zip",
+        report="{source}_assembly/ncbi_dataset/data/assembly_data_report.jsonl",
     params:
         taxon_id=TAXON_ID,
         unzip=unzip,
     shell:
         """
-        datasets download genome taxon {params.taxon_id} --assembly-source refseq --dehydrated  --filename refseq_assembly.zip
-        {params.unzip} refseq_assembly.zip -d refseq_assembly
-        datasets rehydrate --directory refseq_assembly
-        """
-
-rule fetch_genbank_assemblies:
-    output:
-        dataset_package="genbank_assembly.zip",
-        report="genbank_assembly/ncbi_dataset/data/assembly_data_report.jsonl",
-    params:
-        taxon_id=TAXON_ID,
-        unzip=unzip,
-    shell:
-        """
-        datasets download genome taxon {params.taxon_id} --assembly-source genbank --dehydrated  --filename genbank_assembly.zip
-        {params.unzip} genbank_assembly.zip -d genbank_assembly
-        datasets rehydrate --directory genbank_assembly
+        datasets download genome taxon {params.taxon_id} --assembly-source {wildcards.source} --dehydrated  --filename {wildcards.source}_assembly.zip
+        {params.unzip} {wildcards.source}_assembly.zip -d {wildcards.source}_assembly
+        datasets rehydrate --directory {wildcards.source}_assembly
         """
 
 rule get_assembly_groups:
