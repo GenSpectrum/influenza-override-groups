@@ -1,3 +1,7 @@
 .snakemake/
 genbank_assembly/
 refseq_assembly/
+
+# pixi environments
+.pixi/*
+!.pixi/config.toml

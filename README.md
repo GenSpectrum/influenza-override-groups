@@ -8,15 +8,24 @@ Mapping files:
 * `results/197911-groups.json` (Influenza A)
 * `results/11520-groups.json` (Influenza B)
 
-## Generating these files
+## Getting Started
 
-Activate the enviroment and run the `snakemake` script for the taxon you want to update.
-For example for Influenza A:
+After cloning this repository, install dependencies using [pixi](https://pixi.sh):
 
 ```
-micromamba create -f environment.yaml
-micromamba activate grouping
-snakemake --config taxon_id=197911
+pixi install
+```
+
+## Generating these files
+
+Use the pixi tasks to regenerate the grouping files:
+
+```
+# For Influenza A
+pixi run regenerate-influenza-a
+
+# For Influenza B
+pixi run regenerate-influenza-b
 ```
 
 ## What the script is doing
