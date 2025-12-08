@@ -14,29 +14,38 @@ rule all:
 
 
 
-rule download_and_unzip_assemblies:
+rule download_assemblies:
+    """
+    This rule simply downloads zip files of assemblies for a given organism. The assemblies are downloaded dehydrated,
+    which means they don't actually contain any sequence data yet, only metadata and links for downloading the seq. data.
+    This makes the download quite fast. The 'rehydration' is then done in another rule.
+    """
     output:
         dataset_package="{source}_assembly.zip",
-        report="{source}_assembly/ncbi_dataset/data/assembly_data_report.jsonl",
     params:
         taxon_id=TAXON_ID,
-        unzip=unzip,
-        output_dir="{source}_assembly",
     shell:
         """
         datasets download genome taxon {params.taxon_id} --assembly-source {wildcards.source} --dehydrated --filename {output.dataset_package}
-        {params.unzip} {output.dataset_package} -d {params.output_dir}
         """
 
-rule rehydrate_assemblies:
+rule unzip_and_rehydrate_assemblies:
+    """
+    Unzips the downloaded, dehydrated assembly, and then rehydrates it. The rehydration can take quite a bit,
+    but it can be restarted. Run this rule with --rerun-incomplete to let snakemake know that it can be safely restarted.
+    """
     input:
-        report="{source}_assembly/ncbi_dataset/data/assembly_data_report.jsonl",
+        dataset_package="{source}_assembly.zip",
     output:
+        report="{source}_assembly/ncbi_dataset/data/assembly_data_report.jsonl",
         marker="{source}_assembly/.rehydration_complete",
     params:
+        unzip=unzip,
+        output_dir="{source}_assembly",
         assembly_dir="{source}_assembly",
     shell:
         """
+        {params.unzip} -o {input.dataset_package} -d {params.output_dir}
         datasets rehydrate --directory {params.assembly_dir} && touch {output.marker}
         """
 
