@@ -14,18 +14,30 @@ rule all:
 
 
 
-rule fetch_assemblies:
+rule download_and_unzip_assemblies:
     output:
         dataset_package="{source}_assembly.zip",
         report="{source}_assembly/ncbi_dataset/data/assembly_data_report.jsonl",
     params:
         taxon_id=TAXON_ID,
         unzip=unzip,
+        output_dir="{source}_assembly",
     shell:
         """
-        datasets download genome taxon {params.taxon_id} --assembly-source {wildcards.source} --dehydrated  --filename {wildcards.source}_assembly.zip
-        {params.unzip} {wildcards.source}_assembly.zip -d {wildcards.source}_assembly
-        datasets rehydrate --directory {wildcards.source}_assembly
+        datasets download genome taxon {params.taxon_id} --assembly-source {wildcards.source} --dehydrated --filename {output.dataset_package}
+        {params.unzip} {output.dataset_package} -d {params.output_dir}
+        """
+
+rule rehydrate_assemblies:
+    input:
+        report="{source}_assembly/ncbi_dataset/data/assembly_data_report.jsonl",
+    output:
+        marker="{source}_assembly/.rehydration_complete",
+    params:
+        assembly_dir="{source}_assembly",
+    shell:
+        """
+        datasets rehydrate --directory {params.assembly_dir} && touch {output.marker}
         """
 
 rule get_assembly_groups:
@@ -33,6 +45,8 @@ rule get_assembly_groups:
         script="scripts/group_segments.py",
         report_genbank="genbank_assembly/ncbi_dataset/data/assembly_data_report.jsonl",
         report_refseq="refseq_assembly/ncbi_dataset/data/assembly_data_report.jsonl",
+        rehydration_genbank="genbank_assembly/.rehydration_complete",
+        rehydration_refseq="refseq_assembly/.rehydration_complete",
         ignore_list="error_sequences.txt",
     output:
         groups_json="results/{TAXON_ID}-groups.json",
