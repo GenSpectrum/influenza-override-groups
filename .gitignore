@@ -1,6 +1,7 @@
 .snakemake/
 genbank_assembly/
 refseq_assembly/
+*_assembly.zip
 
 # pixi environments
 .pixi/*
