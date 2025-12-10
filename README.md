@@ -12,7 +12,7 @@ Mapping files:
 
 After cloning this repository, install dependencies using [pixi](https://pixi.sh):
 
-```
+```sh
 pixi install
 ```
 
@@ -20,7 +20,7 @@ pixi install
 
 Use the pixi tasks to regenerate the grouping files:
 
-```
+```sh
 # For Influenza A
 pixi run regenerate-influenza-a
 
