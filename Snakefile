@@ -7,6 +7,9 @@ if os.uname().sysname == "Darwin":
 else:
     unzip = "unzip"
 
+# Disable progress bars in CI environments
+datasets_progress_flag = "--no-progressbar" if os.environ.get("CI") else ""
+
 
 rule all:
     input:
@@ -24,9 +27,14 @@ rule download_assemblies:
         dataset_package="{source}_assembly.zip",
     params:
         taxon_id=TAXON_ID,
+        progress_flag=datasets_progress_flag,
     shell:
         """
-        datasets download genome taxon {params.taxon_id} --assembly-source {wildcards.source} --dehydrated --filename {output.dataset_package}
+        datasets download genome taxon {params.taxon_id} \
+            {params.progress_flag} \
+            --assembly-source {wildcards.source} \
+            --dehydrated \
+            --filename {output.dataset_package}
         """
 
 rule unzip_and_rehydrate_assemblies:
@@ -43,10 +51,14 @@ rule unzip_and_rehydrate_assemblies:
         unzip=unzip,
         output_dir="{source}_assembly",
         assembly_dir="{source}_assembly",
+        progress_flag=datasets_progress_flag,
     shell:
         """
         {params.unzip} -o {input.dataset_package} -d {params.output_dir}
-        datasets rehydrate --directory {params.assembly_dir} && touch {output.marker}
+        datasets rehydrate \
+            {params.progress_flag} \
+            --directory {params.assembly_dir} \
+        && touch {output.marker}
         """
 
 rule get_assembly_groups:
