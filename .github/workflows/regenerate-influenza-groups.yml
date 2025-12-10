@@ -20,7 +20,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        organism: ${{ github.event_name == 'schedule' && fromJSON('["A", "B"]') || fromJSON(format('["{0}"]', inputs.organism)) }}
+        organism: ${{ github.event_name == 'schedule' && fromJSON('["A","B"]') || fromJSON(format('["{0}"]', github.event.inputs.organism)) }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
