@@ -36,6 +36,12 @@ pixi run regenerate-influenza-b
 
 For Influenza A, step 1 takes about 3 minutes, step 2 can take around 1 hour, and step 3 should take only 30 seconds.
 
+## GitHub Actions to regenerate the grouping files
+
+This repo also has a GitHub action per organism, to regenerate the files.
+When run, the action creates a PR to update the grouping file.
+The actions are scheduled to run every night.
+
 ## How these files are used
 
 [Loculus](https://loculus.org/) can use these files during ingest, to override groups.
