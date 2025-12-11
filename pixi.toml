@@ -6,8 +6,8 @@ platforms = ["linux-64", "osx-64", "osx-arm64"]
 [tasks]
 # --cores have to specified for local execution. Use 1 to be nice to upstream servers.
 # --rerun-incomplete: We use this because our rules are idempotent and can be restarted.
-regenerate-influenza-a = "snakemake --cores 1 --rerun-incomplete --config taxon_id=197911"
-regenerate-influenza-b = "snakemake --cores 1 --rerun-incomplete --config taxon_id=11520"
+regenerate-influenza-a = "snakemake --cores 1 ${CI:+--forceall} --rerun-incomplete --config taxon_id=197911"
+regenerate-influenza-b = "snakemake --cores 1 ${CI:+--forceall} --rerun-incomplete --config taxon_id=11520"
 clean = "rm -rf genbank_assembly/ refseq_assembly/ *_assembly.zip"
 
 [dependencies]
