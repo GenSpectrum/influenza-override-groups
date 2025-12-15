@@ -20,7 +20,7 @@ jobs:
           cache: true
 
       - name: Regenerate Influenza B groups
-        run: pixi run regenerate-influenza-b
+        run: pixi run regenerate-influenza-b-ci
 
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v7
