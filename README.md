@@ -1,12 +1,14 @@
 # influenza-override-groups
 
-This directory contains a mapping of Influenza A and Influenza B genbank assemblies to segment accessions,
+This repository contains a mapping of Influenza A and Influenza B genbank assemblies to segment accessions,
 as well as the code to update this mapping.
 
 Mapping files:
 
 * `results/197911-groups.json` (Influenza A)
 * `results/11520-groups.json` (Influenza B)
+
+The files are updated automatically every night through GitHub actions.
 
 ## Getting Started
 
@@ -36,11 +38,16 @@ pixi run regenerate-influenza-b
 
 For Influenza A, step 1 takes about 3 minutes, step 2 can take around 1 hour, and step 3 should take only 30 seconds.
 
+## `error_sequences.txt`
+
+This file contains a line-by-line list of sequences that cause pipeline errors. Often, this happens when two sequences in the same assembly are assigned to the same segment. In that case, we but all sequences from the assembly on the list.
+
+Typically we get notified about a pipeline error through Slack, and then put the sequences on the list that caused the error.
+
 ## GitHub Actions to regenerate the grouping files
 
-This repo also has a GitHub action per organism, to regenerate the files.
-When run, the action creates a PR to update the grouping file.
-The actions are scheduled to run every night.
+This repository also contains a GitHub action per organism, to regenerate the grouping JSON files.
+The actions are scheduled to run once every night, and if changes to the groupings are found, a PR is created to update the grouping file.
 
 ## How these files are used
 
@@ -53,4 +60,4 @@ grouping_override: "https://GenSpectrum.github.io/influenza-override-groups/resu
 
 ## Acknowledgements
 
-This repo builds on the work in https://github.com/anna-parker/influenza-a-groupings.
+This repository builds on the work in https://github.com/anna-parker/influenza-a-groupings.
