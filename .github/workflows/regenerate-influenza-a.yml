@@ -13,6 +13,8 @@ concurrency:
 jobs:
   regenerate:
     runs-on: ubuntu-latest
+    env:
+      GROUP_FILE: results/197911-groups.json
     permissions:
       contents: write        # Required for pushing commits to main
       pull-requests: write   # Required for creating PRs
@@ -33,41 +35,32 @@ jobs:
         id: check_changes
         run: |
           # Check if there are any changes
-          if git diff --quiet results/197911-groups.json; then
+          if git diff --quiet $GROUP_FILE; then
             echo "has_changes=false" >> $GITHUB_OUTPUT
-            echo "total_changes=0" >> $GITHUB_OUTPUT
+            echo "large_change=false" >> $GITHUB_OUTPUT
             echo "No changes detected"
             exit 0
           fi
 
-          # Get diff statistics
-          DIFF_OUTPUT=$(git diff --numstat results/197911-groups.json)
+          CHANGE_SIZE=$(git diff $GROUP_FILE | wc -l | awk '{print $1}')
 
-          # Validate and parse
-          if echo "$DIFF_OUTPUT" | grep -qE '^[0-9]+\s+[0-9]+'; then
-            ADDITIONS=$(echo "$DIFF_OUTPUT" | awk '{print $1}')
-            DELETIONS=$(echo "$DIFF_OUTPUT" | awk '{print $2}')
-            TOTAL_CHANGES=$((ADDITIONS + DELETIONS))
-
-            echo "has_changes=true" >> $GITHUB_OUTPUT
-            echo "total_changes=$TOTAL_CHANGES" >> $GITHUB_OUTPUT
-            echo "Changes detected: +$ADDITIONS -$DELETIONS (total: $TOTAL_CHANGES lines)"
+          if [ "$CHANGE_SIZE" -gt 2000 ]; then
+              echo "large_change=true" >> $GITHUB_OUTPUT
           else
-            echo "::error::Unable to parse diff output: $DIFF_OUTPUT"
-            exit 1
+              echo "large_change=false" >> $GITHUB_OUTPUT
           fi
 
       - name: Commit directly to main
-        if: steps.check_changes.outputs.has_changes == 'true' && steps.check_changes.outputs.total_changes <= 2000
+        if: steps.check_changes.outputs.has_changes == 'true' && steps.check_changes.outputs.large_change == 'false'
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add results/197911-groups.json
+          git add $GROUP_FILE
           git commit -m "chore: update influenza A assemblies"
           git push
 
       - name: Create Pull Request
-        if: steps.check_changes.outputs.has_changes == 'true' && steps.check_changes.outputs.total_changes > 2000
+        if: steps.check_changes.outputs.has_changes == 'true' && steps.check_changes.outputs.large_change == 'true'
         uses: peter-evans/create-pull-request@v7
         with:
           commit-message: 'chore: update influenza A assemblies'
