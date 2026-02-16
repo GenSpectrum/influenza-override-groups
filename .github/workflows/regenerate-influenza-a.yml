@@ -7,7 +7,7 @@ on:
   workflow_dispatch:
 
 concurrency:
-  group: regenerate-influenza-a
+  group: regenerate-groups
   cancel-in-progress: false
 
 jobs:
